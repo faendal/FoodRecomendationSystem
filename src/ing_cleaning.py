@@ -31,10 +31,3 @@ def ingredient_parser(ingreds: list[str]) -> list[str]:
         if items: ingred_list.append(' '.join(items))
     ingred_list = " ".join(ingred_list)
     return ingred_list
-
-if __name__ == '__main__':
-    recipe_df = pd.read_csv(config.RECIPES_PATH)
-    recipe_df['ingredients_parsed'] = recipe_df['ingredients'].apply(lambda x: ingredient_parser(x))
-    df = recipe_df[['recipe_name', 'ingredients_parsed', 'ingredients', 'recipe_urls']]
-    df = df.dropna()
-    df.to_csv(config.PARSED_PATH, index=False)
