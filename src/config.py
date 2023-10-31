@@ -1,4 +1,5 @@
 RECIPES_PATH = './scraping/recipes.csv'
 PARSED_PATH = './clean_recipes.csv'
+MODEL_PATH = './model_cbow.bin'
 TFIDF_MODEL_PATH = './tfidf.pkl'
 TFIDF_ENCODING_PATH = './tfidf_encodings.pkl'

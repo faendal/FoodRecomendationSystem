@@ -7,8 +7,8 @@ from gensim.models import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import defaultdict
-sys.path.insert(1, './src')
 from ing_cleaning import ingredient_parser
+import config
 
 def get_and_sort_corpus(data):
     corpus_sorted = []
@@ -19,7 +19,7 @@ def get_and_sort_corpus(data):
     return corpus_sorted
 
 def get_recommendations(N, scores):
-    df_recipes = pd.read_csv('./src/clean_recipes.csv')
+    df_recipes = pd.read_csv(config.PARSED_PATH)
     top = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:N]
     recommendation = pd.DataFrame(columns=['recipe', 'ingredients', 'score', 'url'])
     count = 0
@@ -94,10 +94,10 @@ class TfidfEmbeddingVectorizer(object):
     def word_average_list(self, docs): return np.vstack([self.word_average(sent) for sent in docs])
 
 def get_rec(ingredients, N = 5, mean = False):
-    model = Word2Vec.load('./model_cbow.bin')
+    model = Word2Vec.load(config.MODEL_PATH)
     model.init_sims(replace=True)
     if model: print('Model loaded successfully')
-    data = pd.read_csv('./src/clean_recipes.csv')
+    data = pd.read_csv(config.PARSED_PATH)
     corpus = get_and_sort_corpus(data)
     
     if mean:
