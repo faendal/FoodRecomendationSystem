@@ -5,7 +5,6 @@ import re
 import unidecode
 #nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
-import config
 
 def ingredient_parser(ingreds: list[str]) -> list[str]:
     
