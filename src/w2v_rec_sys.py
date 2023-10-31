@@ -1,4 +1,3 @@
-import sys
 import unidecode
 import ast
 import numpy as np
