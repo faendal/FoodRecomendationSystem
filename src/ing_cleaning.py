@@ -3,8 +3,9 @@ import string
 import ast
 import re
 import unidecode
-#nltk.download('wordnet')
+# nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
+
 
 def ingredient_parser(ingreds: list[str]) -> list[str]:
     
@@ -13,20 +14,26 @@ def ingredient_parser(ingreds: list[str]) -> list[str]:
     
     if isinstance(ingreds, list): ingredients = ingreds
     else: ingredients = ast.literal_eval(ingreds)
-    
-    translator = str.maketrans('', '', string.punctuation)
+
+    translator = str.maketrans("", "", string.punctuation)
     lemmatizer = WordNetLemmatizer()
     ingred_list = []
-    
+
     for i in ingredients:
         i.translate(translator)
-        items = re.split(' |-', i)
+        items = re.split(" |-", i)
         items = [word for word in items if word.isalpha()]
         items = [word.lower() for word in items]
         items = [unidecode.unidecode(word) for word in items]
         items = [lemmatizer.lemmatize(word) for word in items]
         items = [word for word in items if word not in measures]
         items = [word for word in items if word not in words_to_remove]
-        if items: ingred_list.append(' '.join(items))
-    ingred_list = " ".join(ingred_list)
+        if items:
+            ingred_list.append(" ".join(items))
     return ingred_list
+
+
+if __name__ == "__main__":
+    data = "['FRITTATA', '250 g undyed smoked haddock , from sustainable sources', '4 fresh bay leaves', '8 large free-range eggs', '6 spring onions', '½ a bunch of fresh mint , (15g)', '1 large handful of frozen peas', 'olive oil', '5 g Parmesan cheese', 'SALAD', '2 apples', '1 lemon', '½ a bunch of fresh chives , (15g)', '1 handful of walnuts', '75 g watercress', '2 tablespoons extra virgin olive oil', '30 g Emmental cheese', 'TO SERVE', '200 g focaccia bread', '1 lemon']"
+    parsed = ingredient_parser(data)
+    print(parsed)

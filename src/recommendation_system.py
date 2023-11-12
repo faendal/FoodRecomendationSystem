@@ -11,8 +11,7 @@ import config
 
 def get_and_sort_corpus(data):
     corpus_sorted = []
-    for doc in data.ingredients_parsed.values:
-        doc = doc.split(' ')
+    for doc in data.parsed.values:
         doc.sort()
         corpus_sorted.append(doc)
     return corpus_sorted
@@ -94,9 +93,9 @@ class TfidfEmbeddingVectorizer(object):
 
 def get_rec(ingredients, N = 5, mean = False):
     model = Word2Vec.load(config.MODEL_PATH)
-    model.init_sims(replace=True)
     if model: print('Model loaded successfully')
     data = pd.read_csv(config.PARSED_PATH)
+    data['parsed'] = data.ingredients.apply(ingredient_parser)
     corpus = get_and_sort_corpus(data)
     
     if mean:
@@ -111,20 +110,20 @@ def get_rec(ingredients, N = 5, mean = False):
         doc_vec = [doc.reshape(1, -1) for doc in doc_vec]
         assert len(doc_vec) == len(corpus)
     
-    input = ingredients
-    input = input.split(',')
-    input = ingredient_parser(input)
+    inp = ingredients
+    inp = inp.split(',')
+    inp = ingredient_parser(inp)
     
-    if mean: input_embedding = mean_vec_tr.transform([input])[0].reshape(1, -1)
-    else: input_embedding = tfidf_vec_tr.transform([input])[0].reshape(1, -1)
+    if mean: input_embedding = mean_vec_tr.transform([inp])[0].reshape(1, -1)
+    else: input_embedding = tfidf_vec_tr.transform([inp])[0].reshape(1, -1)
     
     cos_sim = map(lambda x: cosine_similarity(input_embedding, x)[0][0], doc_vec)
     scores = list(cos_sim)
     
     recommendations = get_recommendations(N, scores)
-    return recommendations
+    return recommendations[['recipe', 'ingredients', 'score', 'recipe_urls']]
 
 if __name__ == '__main__':
-    input = 'chicken thigh, gjskljñklsffg, onion, rice, noodle, seaweed nori sheet, sesame, shallot, soy'
-    rec = get_rec(input)
+    input = 'beef, butter, carrot'
+    rec = get_rec(input, 5, False)
     print(rec)
