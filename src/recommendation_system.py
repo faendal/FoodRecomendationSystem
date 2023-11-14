@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import defaultdict
 from ing_cleaning import ingredient_parser
 import config
+from flask import Flask, request, jsonify
 
 def get_and_sort_corpus(data):
     corpus_sorted = []
@@ -123,7 +124,16 @@ def get_rec(ingredients, N = 5, mean = False):
     recommendations = get_recommendations(N, scores)
     return recommendations[['recipe', 'ingredients', 'score', 'recipe_urls']]
 
+api = Flask(__name__)
+
+@api.route('/request', methods=['GET'])
+def send_rec():
+    ingredients = request.headers.get('ingredients')
+    print(ingredients)
+    #drop url and score
+    rec = get_rec(ingredients)
+    print(rec.to_dict(orient='records'))
+    return jsonify(rec.to_dict(orient='records'))
+
 if __name__ == '__main__':
-    input = 'beef, butter, carrot'
-    rec = get_rec(input, 5, False)
-    print(rec)
+    api.run(debug=True, host='0.0.0.0', port=6969)
